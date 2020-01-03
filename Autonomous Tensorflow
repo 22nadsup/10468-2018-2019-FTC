@@ -51,7 +51,7 @@ public class AutonomousCRATER_4x4_TF extends LinearOpMode {
         telemetry.update();
     
         // Initialize the hardware variables.
-        leftFront = hardwareMap.get(DcMotor.class, "M1"); //Connect names above with names in the phones
+        leftFront = hardwareMap.get(DcMotor.class, "M1");           //Connect names above with names in the phones
         rightFront = hardwareMap.get(DcMotor.class, "M0");
         leftRear = hardwareMap.get(DcMotor.class, "M2");
         rightRear = hardwareMap.get(DcMotor.class, "M3");
