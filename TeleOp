@@ -1,0 +1,193 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;                  //only for continuous rotation servo
+import com.qualcomm.robotcore.hardware.Servo;                    //only for 180 servo
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;         //if this line causes problems it's not needed
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DcMotorController;
+
+
+@TeleOp(name="TeleOp Main - 10468", group="Linear Opmode")
+    //put your own name for your teleop, but make sure it's the same as the file
+
+public class TeleOp1 extends LinearOpMode {
+
+    // Declare OpMode members.
+    private ElapsedTime mRuntime = new ElapsedTime(); //most teams this year now use runtime instead of mRuntime (replace everytime)
+    private DcMotor leftFront = null;     //use your own names for motors
+    private DcMotor rightFront = null;
+    private DcMotor leftRear = null;
+    private DcMotor rightRear = null;
+    private DcMotor liftmotor = null;
+    private DcMotor armmotor = null;
+    private DcMotor armmotor2 = null;
+    //private Servo dropServo = null;
+    private CRServo rakeServo;                //only for CRServo
+    private DcMotor mineralMotor = null;
+    
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Initialize the hardware variables. 
+        leftFront  = hardwareMap.get(DcMotor.class, "M1"); //connect the names for motors above with names in phones
+        rightFront = hardwareMap.get(DcMotor.class, "M0");
+        leftRear = hardwareMap.get(DcMotor.class, "M2");
+        rightRear = hardwareMap.get(DcMotor.class, "M3");
+        liftmotor = hardwareMap.get(DcMotor.class, "lift");
+        armmotor2 = hardwareMap.get(DcMotor.class, "armlift");
+        armmotor = hardwareMap.get(DcMotor.class, "arm");
+        //dropServo = hardwareMap.get(Servo.class, "S1");
+        rakeServo = hardwareMap.get(CRServo.class, "S2");         //CRServo only
+        mineralMotor = hardwareMap.get(DcMotor.class, "mineralLift");
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Declare direction of motors (7 total)
+        leftFront.setDirection(DcMotor.Direction.FORWARD); //make sure names are still correct, and set direction for motors
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        liftmotor.setDirection(DcMotor.Direction.FORWARD);
+        armmotor2.setDirection(DcMotor.Direction.FORWARD);
+        armmotor.setDirection(DcMotor.Direction.FORWARD);
+        rakeServo.setDirection(CRServo.Direction.FORWARD);
+        mineralMotor.setDirection(DcMotor.Direction.FORWARD);
+        
+        armmotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);  //not needed it will hold the motor still if not in use
+        
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        mRuntime.reset();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+            // Setup a variable for each drive wheel to save power level for telemetry
+            double leftPower;
+            double rightPower;
+            double liftPower;
+            double armPower;
+            double CRPower;
+            double mineralPower;
+           
+            // Tank Mode uses both stricks to move robot
+             leftPower  = (-gamepad1.left_stick_y * .5) ;   //used tank mode here you dont need to, set controls and speeds for motors
+             rightPower = (-gamepad1.right_stick_y * .5) ;
+             liftPower = (-gamepad2.right_stick_y * 1);
+             armPower = 0;
+             CRPower = 0;         //if you have a CRServo (360) it is treated like a motor
+             mineralPower = 0;
+             
+            // Send calculated power to wheels
+            leftFront.setPower(leftPower);
+            rightFront.setPower(rightPower);
+            leftRear.setPower(leftPower);
+            rightRear.setPower(rightPower);
+            
+            // Send calculated power to lift motor
+            liftmotor.setPower(liftPower);
+            armmotor.setPower(armPower);
+            rakeServo.setPower(CRPower);
+            mineralMotor.setPower(mineralPower);
+            
+            
+            //rest is loops for special actions, use if you wanna try servos ONLY if you have drivetrain working, check very bottom
+            
+//Spin the end of the arm
+            if(gamepad2.a) {
+               
+               armmotor.setPower(.75);
+               
+             } else { 
+                 
+               armmotor.setPower(0); }
+               
+               if(gamepad2.y) {
+               
+               armmotor.setPower(-.75);
+               
+             } else {
+                 armmotor2.setPower(0); }
+               
+//Lift arm up and down
+                while(gamepad2.right_bumper) {
+               
+               armmotor2.setPower(.5); }
+               
+               while(gamepad2.left_bumper) {
+               
+               armmotor2.setPower(-.5); }
+            
+//Rake 
+             while (gamepad2.b) {
+               
+               rakeServo.setPower(1.5);
+               
+               }
+               rakeServo.setPower(0);
+               
+               while (gamepad2.x) {
+               
+               rakeServo.setPower(-1.5);
+               }
+               
+               rakeServo.setPower(0);
+               
+ //Mineral Mechanism
+               while(gamepad1.b) {
+
+                mRuntime.reset();  
+
+             //Put mineral in lander
+             liftmotor.setPower(0);
+             mineralMotor.setPower(-.3);
+             while (mRuntime.time() < 1.5) {}
+               
+               mRuntime.reset();
+
+               //time for mineral to fall in               
+               liftmotor.setPower(0);
+                mineralMotor.setPower(0);
+             while (mRuntime.time() < .2) {}
+               
+               mRuntime.reset();  
+               
+               //arm comes back down
+            liftmotor.setPower(0);
+            mineralMotor.setPower(.3);
+            while (mRuntime.time() < 1.5) {}
+        
+//Raise               
+               while(gamepad1.y) {
+               mRuntime.reset();  
+
+             liftmotor.setPower(1);
+             mineralMotor.setPower(0);
+             while (mRuntime.time() < 8) {}
+               
+//Lower               
+               mRuntime.reset();  
+               
+                while(gamepad1.a) {
+             liftmotor.setPower(-1);
+             mineralMotor.setPower(0);
+             while (mRuntime.time() < 8) {}
+             
+              //If you problems, always check spelling, punctuation, and that there isn't any open brackets
+              
+              //You might need this, if you are having problems try getting rid of it 
+            // Show the elapsed game time and wheel power.
+            telemetry.addData("Status", "Run Time: " + mRuntime.toString());
+            telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            telemetry.update();
+        }
+    }
+               
+               }
+}
