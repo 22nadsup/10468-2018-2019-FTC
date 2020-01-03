@@ -1,0 +1,148 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;    //only if you have a servo 
+import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
+
+
+@Autonomous(name="AutonmousCRATER_4x4", group="Linear Opmode") //Use your own name, keep it the same as the file name
+
+public class AutonomousCRATER_4x4 extends LinearOpMode {
+
+    // Declare OpMode members.
+    private ElapsedTime mRuntime = new ElapsedTime(); //Most teams use runtime now instead of mRuntime, replace everytime
+    private DcMotor leftFront = null;         //Your own motor names
+    private DcMotor rightFront = null;
+    private DcMotor leftRear = null;
+    private DcMotor rightRear = null;
+    private DcMotor liftmotor = null;
+    private Servo dropServo = null;          //180 servo only
+    private DcMotor armmotor2 = null; 
+    
+    @Override
+    public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+
+        // Initialize the hardware variables.
+        leftFront = hardwareMap.get(DcMotor.class, "M1"); //Motor names above, connect to names in phones
+        rightFront = hardwareMap.get(DcMotor.class, "M0");
+        leftRear = hardwareMap.get(DcMotor.class, "M2");
+        rightRear = hardwareMap.get(DcMotor.class, "M3");
+        liftmotor = hardwareMap.get(DcMotor.class, "lift");
+        dropServo = hardwareMap.get(Servo.class, "S1");
+        armmotor2 = hardwareMap.get(DcMotor.class, "armlift");
+
+        //Allow Motors to Freespin without power
+        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); //Float isn't needed, allows motor to spin freely when not in use
+        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        armmotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE); //Brake isn't needed, holds motors still when not in use
+
+        // Most robots need the motor on one side to be reversed to drive forward
+        //Define motor direction
+        leftFront.setDirection(DcMotor.Direction.FORWARD);               //Set direction of motors
+        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        leftRear.setDirection(DcMotor.Direction.FORWARD);
+        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        liftmotor.setDirection(DcMotor.Direction.REVERSE);
+        armmotor2.setDirection(DcMotor.Direction.FORWARD);
+        
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+        
+                 //example autonomous, make it how you see fit, make sure to reset your runtime though
+        
+//Lower intake
+         mRuntime.reset();
+         
+         liftmotor.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        armmotor2.setPower(.3);
+        dropServo.setPosition(0);
+        while (mRuntime.time() < 1.1) {}
+        
+        mRuntime.reset();
+        armmotor2.setPower(0);
+        while (mRuntime.time() < .25) {}
+        
+//Lower robot
+        mRuntime.reset();
+        
+        liftmotor.setPower(-1);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        dropServo.setPosition(0);
+        while (mRuntime.time() < 5.45) {}
+        
+        mRuntime.reset();
+
+         liftmotor.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        dropServo.setPosition(0);
+         while (mRuntime.time() < .5) {}
+           
+//Turn away from lander
+        mRuntime.reset();
+        
+        
+        liftmotor.setPower(0);
+        leftFront.setPower(-.4);
+        rightFront.setPower(.3);
+        leftRear.setPower(-.4);
+        rightRear.setPower(0);
+       while (mRuntime.time() < 1.8) {}
+        
+       mRuntime.reset();
+      
+        liftmotor.setPower(1);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+        dropServo.setPosition(0);
+        while (mRuntime.time() < 5.2) {}
+        
+        liftmotor.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        dropServo.setPosition(0);
+        
+//Head toward crater
+        mRuntime.reset();
+        
+        liftmotor.setPower(0);
+        leftFront.setPower(.5);
+        rightFront.setPower(.5);
+        dropServo.setPosition(0);
+        while (mRuntime.time() < .75) {}
+
+        
+        liftmotor.setPower(0);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        dropServo.setPosition(0);
+
+     
+ 
+      
+            //Show the elapsed game time and wheel power.
+            //telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+            //telemetry.update();
+        }
+    }
